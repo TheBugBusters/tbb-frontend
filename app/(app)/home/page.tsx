@@ -1,12 +1,15 @@
 import AudioInput from "@/components/audio";
 import CheckChallengeForm from "@/components/form/check-challenge";
 import CheckForm from "@/components/form/check-form";
-import GenerateChallenge from "@/components/form/generate-challange";
 import Nav from "@/components/nav";
+import responses from "@/lib/responses";
+import { random } from "@/lib/utils";
 import { GraduationCap, RotateCw } from "lucide-react";
 import Image from "next/image";
 
 export default function HomePage() {
+  const getRandom = random(0, 5);
+  const question = responses[getRandom];
   return (
     <div className="h-full flex flex-col gap-6 bg-no-repeat bg-opacity-80 px-10">
       <AudioInput autoPlay="false" />
@@ -40,27 +43,22 @@ export default function HomePage() {
               />
             </div>
           </div>
-          <CheckForm />
+          <CheckForm id={getRandom} />
         </div>
 
         <div className="bg-[url('/bg-wood.avif')] bg-contain rounded-xl shadow-2xl">
           <div className="  bg-amber-800 p-6 opacity-80 border-4 border-amber-900 border-opacity-75 rounded-xl ">
             <h1 className="text-black opacity-70 text-xl font-bold pt-6 px-6">
-              Pergunta de português nível 5
+              Pergunta de {question.type} nível {question.level}
             </h1>
             <p className="text-black opacity-70 text-lg font-medium p-6">
-              No mundo mágico de Eldoria, Douglas, o valente aventureiro, e
-              Luna, a destemida feiticeira, ________ felizes com seus novos
-              artefatos encantados. No entanto, para que pudessem desvendar os
-              segredos ocultos dentro dos artefatos, era necessário que Finn e
-              Luna unissem suas habilidades.
+              {question.ask}
             </p>
-            <GenerateChallenge />
           </div>
         </div>
       </div>
 
-      <CheckChallengeForm />
+      <CheckChallengeForm question={question} />
     </div>
   );
 }

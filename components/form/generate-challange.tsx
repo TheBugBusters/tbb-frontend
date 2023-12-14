@@ -1,5 +1,6 @@
 "use client";
 
+import { useCompletion } from "ai/react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
 
@@ -8,25 +9,31 @@ export default function GenerateChallenge() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [ask, setAsk] = useState("");
+  const [streamedData, setStreamedData] = useState("");
+  const { completion, input, handleInputChange, handleSubmit, error } =
+    useCompletion();
+
   const handleGenerateChallenge = useCallback(async () => {
     const data: any = await fetch(`/api/generate`, {
       method: "POST",
       body: JSON.stringify({
-        prompt:
-          "level 1 douglas visitou a cabana do professor pinpolho e recebeu a seguinte questão em portugues",
+        level: 5,
+        competition: "portugues",
+        name: "Douglas",
       }),
     });
-    console.log(data);
-    const parseRes = data;
-    setAsk(parseRes.ask);
+    console.log(data, "data");
   }, []);
 
   return (
-    <button
-      onClick={handleGenerateChallenge}
-      className="flex items-center justify-center z-10 cursor-pointer bg-[url('/rounded.png')] bg-no-repeat h-20 w-20 bg-contain "
-    >
-      Começar
-    </button>
+    <>
+      {completion}
+      {/* <button
+        onClick={handleGenerateChallenge}
+        className="flex items-center justify-center z-10 cursor-pointer bg-[url('/rounded.png')] bg-no-repeat h-20 w-20 bg-contain "
+      >
+        Começar
+      </button> */}
+    </>
   );
 }

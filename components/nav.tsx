@@ -1,3 +1,4 @@
+import { random } from "@/lib/utils";
 import Image from "next/image";
 
 export default function Nav() {
@@ -13,7 +14,7 @@ export default function Nav() {
             height={60}
           />
           <span className="absolute font-extrabold text-amber-500 opacity-90 ">
-            7390
+            {random(4500, 7000)}
           </span>
         </div>
         <div className="flex flex-col">

@@ -1,5 +1,3 @@
-import { Ratelimit } from "@upstash/ratelimit";
-import { kv } from "@vercel/kv";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { Configuration, OpenAIApi } from "openai-edge";
 
@@ -8,56 +6,21 @@ const config = new Configuration({
 });
 const openai = new OpenAIApi(config);
 
-export const runtime = "edge";
+// export const runtime = "edge";
 
-export async function POST(req: Request): Promise<Response> {
-  if (
-    process.env.NODE_ENV != "development" &&
-    process.env.KV_REST_API_URL &&
-    process.env.KV_REST_API_TOKEN
-  ) {
-    const ip = req.headers.get("x-forwarded-for");
-    const ratelimit = new Ratelimit({
-      redis: kv,
-      limiter: Ratelimit.slidingWindow(50, "1 d"),
-    });
-
-    const { success, limit, reset, remaining } = await ratelimit.limit(
-      `platforms_ratelimit_${ip}`
-    );
-
-    if (!success) {
-      return new Response("You have reached your request limit for the day.", {
-        status: 429,
-        headers: {
-          "X-RateLimit-Limit": limit.toString(),
-          "X-RateLimit-Remaining": remaining.toString(),
-          "X-RateLimit-Reset": reset.toString(),
-        },
-      });
-    }
-  }
-
-  let { prompt: content } = await req.json();
+export async function POST(req: Request): Promise<any> {
+  let { competition, level, name } = await req.json();
   // remove trailing slash,
   // slice the content from the end to prioritize later characters
-  content = content.replace(/\/$/, "").slice(-5000);
-
+  // content = content.replace(/\/$/, "").slice(-5000);
   const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: [
       {
         role: "system",
-        content:
-          "You are a PISA teacher who asks questions for the Pisa simulation based on 4 alternatives, A,B,C,D." +
-          "Give more weight/priority to the level of difficulty that I will give you. level 5 hard, level 1 easy and level 2 to 4 medium." +
-          "Limit your response to no more than 600 characters, but make sure to construct complete sentences." +
-          "Write in portuguese Brazil." +
-          "return JSON ask and alternatives with values, labels and check with true if correctly and false if incorrectly: example: { ask: '', alternatives: [{ label: '5', value: 'A', check: false}] ",
-      },
-      {
-        role: "user",
-        content,
+        content: `Você é um professor do ensino fundamental e vai aplicar um simulado do PISA para os alunos, preciso que você crie uma questão criativa 
+         para a matería de ${competition} do nivel ${level} sendo 5 o mais dificil e 1 o mais facil, devolvendo um JSON com 4 alternativas, as perguntas deverão ser elaboradas contando uma estoria de um jovem aventureiro com o nome ${name} e no final a questão a ser resolvida, devolva isso em um json no formato de exemplo : { ask: '', alternatives: [{ label: '5', value: 'A', check: false}]  
+         `,
       },
     ],
     temperature: 0.7,
@@ -65,7 +28,6 @@ export async function POST(req: Request): Promise<Response> {
     frequency_penalty: 0,
     presence_penalty: 0,
     stream: true,
-    n: 1,
   });
 
   // Convert the response into a friendly text-stream
