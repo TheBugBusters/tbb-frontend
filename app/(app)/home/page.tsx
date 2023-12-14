@@ -5,14 +5,13 @@ import Nav from "@/components/nav";
 import responses from "@/lib/responses";
 import { random } from "@/lib/utils";
 import { GraduationCap, RotateCw } from "lucide-react";
-import Image from "next/image";
 
 export default function HomePage() {
   const getRandom = random(0, 5);
   const question = responses[getRandom];
   return (
     <div className="h-full flex flex-col gap-6 bg-no-repeat bg-opacity-80 px-10">
-      <AudioInput autoPlay="false" />
+      <AudioInput autoPlay="true" />
       <Nav />
       <div className="relative flex items-center justify-center py-12">
         <div className="flex items-center justify-center top-0 absolute">
@@ -32,17 +31,7 @@ export default function HomePage() {
               -30
             </div>
           </div>
-          <div className="flex items-center justify-center z-10 cursor-pointer bg-[url('/rounded.png')] bg-no-repeat h-20 w-20 bg-contain ">
-            <div className=" p-2 rounded-full mr-1">
-              <Image
-                alt=""
-                className=""
-                src={"/close.png"}
-                width={30}
-                height={30}
-              />
-            </div>
-          </div>
+
           <CheckForm id={getRandom} />
         </div>
 

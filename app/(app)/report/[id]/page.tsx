@@ -69,7 +69,7 @@ export default function ReportPage({ params: { id } }: any) {
                   Pra você continuar evoluindo você terá um novo desafio!
                 </h1>
                 <p className="text-black text-center opacity-70 text-lg font-medium p-6">
-                  {nextQuestion.message}
+                  {nextQuestion ? nextQuestion.message : question.message}
                 </p>
                 <NextStageForm />
               </div>
